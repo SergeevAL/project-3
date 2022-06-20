@@ -31,6 +31,7 @@ headers = {
 
 args = {
     "owner": "student",
+    'depends_on_past':True,
     'email': ['student@example.com'],
     'email_on_failure': False,
     'email_on_retry': False,
