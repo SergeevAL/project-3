@@ -101,7 +101,7 @@ CREATE TABLE mart.f_customer_retention (
 	new_customers_count bigint NULL,
 	returning_customers_count bigint NULL,
 	new_customers_revenue bigint NULL,
-	returning_customers_revenue bigint NULL
+	returning_customers_revenue bigint NULL,
 	CONSTRAINT f_customer_retention_pkey PRIMARY KEY (start_date, period_name)
 );
 
