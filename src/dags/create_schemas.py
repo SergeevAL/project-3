@@ -53,7 +53,6 @@ def create_staging():
         engine.execute(query)
         logging(
             {'proc_name':'Create',
-            'status':'Success',
             'msg':'Init schema Staging'},
             'staging',
             'events_log'
@@ -88,8 +87,7 @@ def generate_d_calendar():
         result_proxy=engine.execute(query)
         end = time.time()
         logging(
-            {'status':'Success',
-            'target_table': 'd_calendar',
+            {'target_table': 'd_calendar',
             'source_table': '',
             'duration_ms': (end - current) * 1000,
             'rows': result_proxy.rowcount,
@@ -135,4 +133,8 @@ with DAG(
         python_callable=generate_d_calendar,
     )
 
-create_staging >> create_mart >> generate_d_calendar
+{
+create_staging 
+>> create_mart 
+>> generate_d_calendar
+}
