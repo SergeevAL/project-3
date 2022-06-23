@@ -70,7 +70,6 @@ def upload_once():
             list_tables_path = json.loads(response.content)['data']['s3_path']
             logging(
                 {'proc_name':'Generate and get report',
-                'status':'Success',
                 'msg':f'We get report: {response.content}'},
                 'staging',
                 'events_log')
@@ -97,9 +96,7 @@ def upload_once():
                 df.to_sql(item, engine, index=False, if_exists='replace', schema='staging')
                 end = time.time()
                 logging(
-                    {'proc_name':'Upload',
-                    'status':'Success',
-                    'target_table': item,
+                    {'target_table': item,
                     'source_file': list_tables_path[item],
                     'duration_ms': (end - current) * 1000,
                     'rows': len(df),
@@ -109,8 +106,7 @@ def upload_once():
                 )
             except Exception:
                 logging(
-                    {'proc_name':'Upload',
-                    'status':'Error',
+                    {'status':'Error',
                     'target_table': item,
                     'source_file': list_tables_path[item],
                     'msg':traceback.format_exc()},
@@ -131,8 +127,7 @@ def upload_d_items():
         result_proxy=engine.execute(query)
         end = time.time()
         logging(
-            {'status':'Success',
-            'target_table': 'd_item',
+            {'target_table': 'd_item',
             'source_table': 'user_orders_log',
             'duration_ms': (end - current) * 1000,
             'rows': result_proxy.rowcount,
@@ -162,8 +157,7 @@ def upload_d_customer():
         result_proxy=engine.execute(query)
         end = time.time()
         logging(
-            {'status':'Success',
-            'target_table': 'd_customer',
+            {'target_table': 'd_customer',
             'source_table': 'user_orders_log',
             'duration_ms': (end - current) * 1000,
             'rows': result_proxy.rowcount,
@@ -194,8 +188,7 @@ def upload_d_city():
         result_proxy=engine.execute(query)
         end = time.time()
         logging(
-            {'status':'Success',
-            'target_table': 'd_city',
+            {'target_table': 'd_city',
             'source_table': 'user_orders_log',
             'duration_ms': (end - current) * 1000,
             'rows': result_proxy.rowcount,
@@ -226,8 +219,7 @@ def upload_f_sales():
         result_proxy=engine.execute(query)
         end = time.time()
         logging(
-            {'status':'Success',
-            'target_table': 'f_sales',
+            {'target_table': 'f_sales',
             'source_table': 'user_orders_log',
             'duration_ms': (end - current) * 1000,
             'rows': result_proxy.rowcount,
@@ -257,8 +249,7 @@ def upload_f_customer_retention():
         result_proxy=engine.execute(query)
         end = time.time()
         logging(
-            {'status':'Success',
-            'target_table': 'f_customer_retention',
+            {'target_table': 'f_customer_retention',
             'source_table': 'f_sales',
             'duration_ms': (end - current) * 1000,
             'rows': result_proxy.rowcount,
@@ -315,4 +306,9 @@ with DAG(
         python_callable=upload_f_customer_retention,
     )
 
-upload_once >> [upload_d_items,upload_d_customer,upload_d_city] >> upload_f_sales >> upload_f_customer_retention
+{
+upload_once 
+>> [upload_d_items,upload_d_customer,upload_d_city] 
+>> upload_f_sales 
+>> upload_f_customer_retention
+}
